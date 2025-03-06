@@ -1,0 +1,4 @@
+venv
+test.db
+test1.db 
+sql_query_syntax.py
