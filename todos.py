@@ -2,7 +2,7 @@ import streamlit as st
 from todos_db import LocalDb
 import datetime
 import pandas as pd
-st.title("Todos")
+st.title("Task Manager")
 localdb = LocalDb("test1.db","test_table")
 
 add_tab,edit_tab,delete_tab = st.tabs(["Add Todos","Edit Todos","Delete Todos"])
