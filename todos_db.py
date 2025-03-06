@@ -6,7 +6,8 @@ class LocalDb:
     def __init__(self,db_name,table_name):
         self.db_name = db_name
         self.table_name = table_name
-        self.create_table()
+        if not self.table_exists():
+            self.create_table()
         
     def create_conn(self):
         conn = sqlite3.connect(self.db_name)
@@ -74,21 +75,37 @@ class LocalDb:
         for row in result:
             print(row)
 
-    def update_data(self,description,id):
-        conn = create_conn()
+    def update_data(self,old_task,new_task,description,updated_at=datetime.datetime.now()):
+        conn = self.create_conn()
         query = f"""
-            UPDATE {self.table_name} set description = ? WHERE id=?
+            UPDATE {self.table_name} set description = ?,name=?,created_date=? WHERE name=?
         """   
-        conn.execute(query,[description,id])
+        conn.execute(query,[description,new_task,updated_at,old_task])
         conn.commit()
         conn.close()
 
-    def delete_data(self,id):
-        conn = create_conn()
+    def delete_data(self,task_name):
+        conn = self.create_conn()
         query = f"""
-            DELETE FROM {self.table_name} WHERE ID=?;
+            DELETE FROM {self.table_name} WHERE name=?;
         """   
-        conn.execute(query,[id])
+        conn.execute(query,[task_name])
         conn.commit()
         conn.close()
 
+    def table_exists(self):
+        conn = self.create_conn()
+        listOfTables = conn.execute(
+        f"""SELECT name FROM sqlite_master WHERE type='table' 
+        AND name='{self.table_name}'; """).fetchall()
+        conn.commit()
+        conn.close()
+        print(listOfTables)
+        if listOfTables == []:
+            print('Table not found!')
+            return False
+        else:
+            print('Table found!')
+            return True
+        
+        
